@@ -1,0 +1,67 @@
+/*
+Primitive Type fn
+1.0.0 ·
+
+Function pointers, like fn(usize) -> bool.
+
+See also the traits Fn, FnMut, and FnOnce.
+
+Function pointers are pointers that point to code, not data. 
+They can be called just like functions. Like references, function 
+pointers are, among other things, assumed to not be null, so if you 
+want to pass a function pointer over FFI and be able to accommodate 
+null pointers, make your type Option<fn()> with your required signature.
+Safety
+
+Plain function pointers are obtained by casting either plain functions, 
+or closures that don’t capture an environment:
+*/
+
+fn add_one(x: usize) -> usize {
+    x + 1
+}
+
+let ptr: fn(usize) -> usize = add_one;
+assert_eq!(ptr(5), 6);
+
+let clos: fn(usize) -> usize = |x| x + 5;
+assert_eq!(clos(5), 10);
+
+fn add_one(x: usize) -> usize {
+    x + 1
+}
+
+unsafe fn add_one_unsafely(x: usize) -> usize {
+    x + 1
+}
+
+let safe_ptr: fn(usize) -> usize = add_one;
+
+//ERROR: mismatched types: expected normal fn, found unsafe fn
+//let bad_ptr: fn(usize) -> usize = add_one_unsafely;
+
+let unsafe_ptr: unsafe fn(usize) -> usize = add_one_unsafely;
+let really_safe_ptr: unsafe fn(usize) -> usize = add_one;
+
+use std::mem;
+
+fn bar(x: i32) {}
+
+let not_bar_ptr = bar; // `not_bar_ptr` is zero-sized, uniquely identifying `bar`
+assert_eq!(mem::size_of_val(&not_bar_ptr), 0);
+
+let bar_ptr: fn(i32) = not_bar_ptr; // force coercion to function pointer
+assert_eq!(mem::size_of_val(&bar_ptr), mem::size_of::<usize>());
+
+let footgun = &bar; // this is a shared reference to the zero-sized type identifying `bar`
+
+let fnptr: fn(i32) -> i32 = |x| x+2;
+let fnptr_addr = fnptr as usize;
+
+let fnptr = fnptr_addr as *const ();
+let fnptr: fn(i32) -> i32 = unsafe { std::mem::transmute(fnptr) };
+assert_eq!(fnptr(40), 42);
+
+let fnptr = fnptr_addr as *const ();
+let fnptr: fn(i32) -> i32 = unsafe { std::mem::transmute(fnptr) };
+assert_eq!(fnptr(40), 42);

@@ -1,0 +1,575 @@
+/*
+The main point of criticism echoed in the chapters is that RME, which strength
+it is to connect mathematics to the real world, is attaching too much weight to hor-
+izontal mathematisation. Concerns about this are expressed seriously by Wittmann
+(Chap. 4). Of course, he can understand that Freudenthal and his IOWO colleagues
+in the early days of RME wanted to establish a distinct counterpart to New Math and
+therefore put a lot of emphasis on applications, but he is more in favour of a balanced
+approach. Therefore, he welcomed that under the flag of RME recently publications
+have appeared again, such as from Kindt and De Moor, that are extremely interesting
+in terms of the mathematical structures they address.*/
+
+let f = 3.7_f32;
+let g = 3.0_f32;
+let h = -3.7_f32;
+
+assert_eq!(f.floor(), 3.0);
+assert_eq!(g.floor(), 3.0);
+assert_eq!(h.floor(), -4.0);
+
+let f = 3.01_f32;
+let g = 4.0_f32;
+
+assert_eq!(f.ceil(), 4.0);
+assert_eq!(g.ceil(), 4.0);
+
+let f = 3.3_f32;
+let g = -3.3_f32;
+let h = -3.7_f32;
+let i = 3.5_f32;
+let j = 4.5_f32;
+
+assert_eq!(f.round(), 3.0);
+assert_eq!(g.round(), -3.0);
+assert_eq!(h.round(), -4.0);
+assert_eq!(i.round(), 4.0);
+assert_eq!(j.round(), 5.0);
+
+let f = 3.3_f32;
+let g = -3.3_f32;
+let h = 3.5_f32;
+let i = 4.5_f32;
+
+assert_eq!(f.round_ties_even(), 3.0);
+assert_eq!(g.round_ties_even(), -3.0);
+assert_eq!(h.round_ties_even(), 4.0);
+assert_eq!(i.round_ties_even(), 4.0);
+
+let f = 3.7_f32;
+let g = 3.0_f32;
+let h = -3.7_f32;
+
+assert_eq!(f.trunc(), 3.0);
+assert_eq!(g.trunc(), 3.0);
+assert_eq!(h.trunc(), -3.0);
+
+let x = 3.6_f32;
+let y = -3.6_f32;
+let abs_difference_x = (x.fract() - 0.6).abs();
+let abs_difference_y = (y.fract() - (-0.6)).abs();
+
+assert!(abs_difference_x <= f32::EPSILON);
+assert!(abs_difference_y <= f32::EPSILON);
+
+let x = 3.5_f32;
+let y = -3.5_f32;
+
+assert_eq!(x.abs(), x);
+assert_eq!(y.abs(), -y);
+
+assert!(f32::NAN.abs().is_nan());
+
+let f = 3.5_f32;
+
+assert_eq!(f.signum(), 1.0);
+assert_eq!(f32::NEG_INFINITY.signum(), -1.0);
+
+assert!(f32::NAN.signum().is_nan());
+
+let f = 3.5_f32;
+
+assert_eq!(f.copysign(0.42), 3.5_f32);
+assert_eq!(f.copysign(-0.42), -3.5_f32);
+assert_eq!((-f).copysign(0.42), 3.5_f32);
+assert_eq!((-f).copysign(-0.42), -3.5_f32);
+
+assert!(f32::NAN.copysign(1.0).is_nan());
+
+let m = 10.0_f32;
+let x = 4.0_f32;
+let b = 60.0_f32;
+
+assert_eq!(m.mul_add(x, b), 100.0);
+assert_eq!(m * x + b, 100.0);
+
+let one_plus_eps = 1.0_f32 + f32::EPSILON;
+let one_minus_eps = 1.0_f32 - f32::EPSILON;
+let minus_one = -1.0_f32;
+
+// The exact result (1 + eps) * (1 - eps) = 1 - eps * eps.
+assert_eq!(one_plus_eps.mul_add(one_minus_eps, minus_one), -f32::EPSILON * f32::EPSILON);
+// Different rounding with the non-fused multiply and add.
+assert_eq!(one_plus_eps * one_minus_eps + minus_one, 0.0);
+
+let a: f32 = 7.0;
+let b = 4.0;
+assert_eq!(a.div_euclid(b), 1.0); // 7.0 > 4.0 * 1.0
+assert_eq!((-a).div_euclid(b), -2.0); // -7.0 >= 4.0 * -2.0
+assert_eq!(a.div_euclid(-b), -1.0); // 7.0 >= -4.0 * -1.0
+assert_eq!((-a).div_euclid(-b), 2.0); // -7.0 >= -4.0 * 2.0
+
+let a: f32 = 7.0;
+let b = 4.0;
+assert_eq!(a.rem_euclid(b), 3.0);
+assert_eq!((-a).rem_euclid(b), 1.0);
+assert_eq!(a.rem_euclid(-b), 3.0);
+assert_eq!((-a).rem_euclid(-b), 1.0);
+// limitation due to round-off error
+assert!((-f32::EPSILON).rem_euclid(3.0) != 0.0);
+
+let x = 2.0_f32;
+let abs_difference = (x.powi(2) - (x * x)).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 2.0_f32;
+let abs_difference = (x.powf(2.0) - (x * x)).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let positive = 4.0_f32;
+let negative = -4.0_f32;
+let negative_zero = -0.0_f32;
+
+assert_eq!(positive.sqrt(), 2.0);
+assert!(negative.sqrt().is_nan());
+assert!(negative_zero.sqrt() == negative_zero);
+
+
+let one = 1.0f32;
+// e^1
+let e = one.exp();
+
+// ln(e) - 1 == 0
+let abs_difference = (e.ln() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let f = 2.0f32;
+
+// 2^2 - 4 == 0
+let abs_difference = (f.exp2() - 4.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+
+let one = 1.0f32;
+// e^1
+let e = one.exp();
+
+// ln(e) - 1 == 0
+let abs_difference = (e.ln() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let five = 5.0f32;
+
+// log5(5) - 1 == 0
+let abs_difference = (five.log(5.0) - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let two = 2.0f32;
+
+// log2(2) - 1 == 0
+let abs_difference = (two.log2() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let ten = 10.0f32;
+
+// log10(10) - 1 == 0
+let abs_difference = (ten.log10() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 3.0f32;
+let y = -3.0f32;
+
+let abs_difference_x = (x.abs_sub(1.0) - 2.0).abs();
+let abs_difference_y = (y.abs_sub(1.0) - 0.0).abs();
+
+assert!(abs_difference_x <= f32::EPSILON);
+assert!(abs_difference_y <= f32::EPSILON);
+
+let x = 8.0f32;
+
+// x^(1/3) - 2 == 0
+let abs_difference = (x.cbrt() - 2.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 2.0f32;
+let y = 3.0f32;
+
+// sqrt(x^2 + y^2)
+let abs_difference = (x.hypot(y) - (x.powi(2) + y.powi(2)).sqrt()).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = std::f32::consts::FRAC_PI_2;
+
+let abs_difference = (x.sin() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 2.0 * std::f32::consts::PI;
+
+let abs_difference = (x.cos() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+
+let x = std::f32::consts::FRAC_PI_4;
+let abs_difference = (x.tan() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let f = std::f32::consts::FRAC_PI_2;
+
+// asin(sin(pi/2))
+let abs_difference = (f.sin().asin() - std::f32::consts::FRAC_PI_2).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let f = std::f32::consts::FRAC_PI_4;
+
+// acos(cos(pi/4))
+let abs_difference = (f.cos().acos() - std::f32::consts::FRAC_PI_4).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let f = 1.0f32;
+
+// atan(tan(1))
+let abs_difference = (f.tan().atan() - 1.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+// Positive angles measured counter-clockwise
+// from positive x axis
+// -pi/4 radians (45 deg clockwise)
+let x1 = 3.0f32;
+let y1 = -3.0f32;
+
+// 3pi/4 radians (135 deg counter-clockwise)
+let x2 = -3.0f32;
+let y2 = 3.0f32;
+
+let abs_difference_1 = (y1.atan2(x1) - (-std::f32::consts::FRAC_PI_4)).abs();
+let abs_difference_2 = (y2.atan2(x2) - (3.0 * std::f32::consts::FRAC_PI_4)).abs();
+
+assert!(abs_difference_1 <= f32::EPSILON);
+assert!(abs_difference_2 <= f32::EPSILON);
+
+let x = std::f32::consts::FRAC_PI_4;
+let f = x.sin_cos();
+
+let abs_difference_0 = (f.0 - x.sin()).abs();
+let abs_difference_1 = (f.1 - x.cos()).abs();
+
+assert!(abs_difference_0 <= f32::EPSILON);
+assert!(abs_difference_1 <= f32::EPSILON);
+
+let x = 1e-8_f32;
+
+// for very small x, e^x is approximately 1 + x + x^2 / 2
+let approx = x + x * x / 2.0;
+let abs_difference = (x.exp_m1() - approx).abs();
+
+assert!(abs_difference < 1e-10);
+
+let x = 1e-8_f32;
+
+// for very small x, ln(1 + x) is approximately x - x^2 / 2
+let approx = x - x * x / 2.0;
+let abs_difference = (x.ln_1p() - approx).abs();
+
+assert!(abs_difference < 1e-10);
+
+let e = std::f32::consts::E;
+let x = 1.0f32;
+
+let f = x.sinh();
+// Solving sinh() at 1 gives `(e^2-1)/(2e)`
+let g = ((e * e) - 1.0) / (2.0 * e);
+let abs_difference = (f - g).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let e = std::f32::consts::E;
+let x = 1.0f32;
+let f = x.cosh();
+// Solving cosh() at 1 gives this result
+let g = ((e * e) + 1.0) / (2.0 * e);
+let abs_difference = (f - g).abs();
+
+// Same result
+assert!(abs_difference <= f32::EPSILON);
+
+let e = std::f32::consts::E;
+let x = 1.0f32;
+
+let f = x.tanh();
+// Solving tanh() at 1 gives `(1 - e^(-2))/(1 + e^(-2))`
+let g = (1.0 - e.powi(-2)) / (1.0 + e.powi(-2));
+let abs_difference = (f - g).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 1.0f32;
+let f = x.sinh().asinh();
+
+let abs_difference = (f - x).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 1.0f32;
+let f = x.cosh().acosh();
+
+let abs_difference = (f - x).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let e = std::f32::consts::E;
+let f = e.tanh().atanh();
+
+let abs_difference = (f - e).abs();
+
+assert!(abs_difference <= 1e-5);
+
+#![feature(float_gamma)]
+let x = 5.0f32;
+
+let abs_difference = (x.gamma() - 24.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+#![feature(float_gamma)]
+let x = 2.0f32;
+
+let abs_difference = (x.ln_gamma().0 - 0.0).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let nan = f32::NAN;
+let f = 7.0_f32;
+
+assert!(nan.is_nan());
+assert!(!f.is_nan());
+
+let f = 7.0f32;
+let inf = f32::INFINITY;
+let neg_inf = f32::NEG_INFINITY;
+let nan = f32::NAN;
+
+assert!(!f.is_infinite());
+assert!(!nan.is_infinite());
+
+assert!(inf.is_infinite());
+assert!(neg_inf.is_infinite());
+
+let f = 7.0f32;
+let inf = f32::INFINITY;
+let neg_inf = f32::NEG_INFINITY;
+let nan = f32::NAN;
+
+assert!(f.is_finite());
+
+assert!(!nan.is_finite());
+assert!(!inf.is_finite());
+assert!(!neg_inf.is_finite());
+
+
+let min = f32::MIN_POSITIVE; // 1.17549435e-38f32
+let max = f32::MAX;
+let lower_than_min = 1.0e-40_f32;
+let zero = 0.0_f32;
+
+assert!(!min.is_subnormal());
+assert!(!max.is_subnormal());
+
+assert!(!zero.is_subnormal());
+assert!(!f32::NAN.is_subnormal());
+assert!(!f32::INFINITY.is_subnormal());
+// Values between `0` and `min` are Subnormal.
+assert!(lower_than_min.is_subnormal());
+
+let min = f32::MIN_POSITIVE; // 1.17549435e-38f32
+let max = f32::MAX;
+let lower_than_min = 1.0e-40_f32;
+let zero = 0.0_f32;
+
+assert!(min.is_normal());
+assert!(max.is_normal());
+
+
+use std::num::FpCategory;
+
+let num = 12.4_f32;
+let inf = f32::INFINITY;
+
+assert_eq!(num.classify(), FpCategory::Normal);
+assert_eq!(inf.classify(), FpCategory::Infinite);
+
+let f = 7.0_f32;
+let g = -7.0_f32;
+
+assert!(f.is_sign_positive());
+assert!(!g.is_sign_positive());
+
+let f = 7.0f32;
+let g = -7.0f32;
+
+assert!(!f.is_sign_negative());
+assert!(g.is_sign_negative());
+
+#![feature(float_next_up_down)]
+// f32::EPSILON is the difference between 1.0 and the next number up.
+assert_eq!(1.0f32.next_up(), 1.0 + f32::EPSILON);
+// But not for most numbers.
+assert!(0.1f32.next_up() < 0.1 + f32::EPSILON);
+assert_eq!(16777216f32.next_up(), 16777218.0);
+
+#![feature(float_next_up_down)]
+let x = 1.0f32;
+// Clamp value into range [0, 1).
+let clamped = x.clamp(0.0, 1.0f32.next_down());
+assert!(clamped < 1.0);
+assert_eq!(clamped.next_up(), 1.0);
+
+let x = 2.0_f32;
+let abs_difference = (x.recip() - (1.0 / x)).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let angle = std::f32::consts::PI;
+
+let abs_difference = (angle.to_degrees() - 180.0).abs();
+assert!(abs_difference <= f32::EPSILON);
+
+let angle = 180.0f32;
+
+let abs_difference = (angle.to_radians() - std::f32::consts::PI).abs();
+
+assert!(abs_difference <= f32::EPSILON);
+
+let x = 1.0f32;
+let y = 2.0f32;
+
+assert_eq!(x.max(y), y);
+
+let x = 1.0f32;
+let y = 2.0f32;
+
+assert_eq!(x.min(y), x);
+
+
+#![feature(float_minimum_maximum)]
+let x = 1.0f32;
+let y = 2.0f32;
+
+assert_eq!(x.maximum(y), y);
+assert!(x.maximum(f32::NAN).is_nan());
+
+/**
+If one of the arguments is NaN, then NaN is returned. Otherwise this returns the greater 
+of the two numbers. For this operation, -0.0 is considered to be less than +0.0. Note that 
+this follows the semantics specified in IEEE 754-2019.
+
+Also note that “propagation” of NaNs here doesn’t necessarily mean that the bitpattern 
+of a NaN operand is conserved; see explanation of NaN as a special value for more info.
+*/
+
+#![feature(float_minimum_maximum)]
+let x = 1.0f32;
+let y = 2.0f32;
+
+assert_eq!(x.minimum(y), x);
+assert!(x.minimum(f32::NAN).is_nan());
+
+/**
+If one of the arguments is NaN, then NaN is returned. Otherwise this returns the lesser 
+of the two numbers. For this operation, -0.0 is considered to be less than +0.0. Note that 
+this follows the semantics specified in IEEE 754-2019.
+
+Also note that “propagation” of NaNs here doesn’t necessarily mean that the bitpattern 
+of a NaN operand is conserved; see explanation of NaN as a special value for more info.
+source
+*/
+
+#![feature(num_midpoint)]
+assert_eq!(1f32.midpoint(4.0), 2.5);
+assert_eq!((-5.5f32).midpoint(8.0), 1.25);
+
+let value = 4.6_f32;
+let rounded = unsafe { value.to_int_unchecked::<u16>() };
+assert_eq!(rounded, 4);
+
+let value = -128.9_f32;
+let rounded = unsafe { value.to_int_unchecked::<i8>() };
+assert_eq!(rounded, i8::MIN);
+
+assert_ne!((1f32).to_bits(), 1f32 as u32); // to_bits() is not casting!
+assert_eq!((12.5f32).to_bits(), 0x41480000);
+
+let v = f32::from_bits(0x41480000);
+assert_eq!(v, 12.5);
+
+let bytes = 12.5f32.to_be_bytes();
+assert_eq!(bytes, [0x41, 0x48, 0x00, 0x00]);
+
+let bytes = 12.5f32.to_le_bytes();
+assert_eq!(bytes, [0x00, 0x00, 0x48, 0x41]);
+
+let bytes = 12.5f32.to_ne_bytes();
+assert_eq!(
+    bytes,
+    if cfg!(target_endian = "big") {
+        [0x41, 0x48, 0x00, 0x00]
+    } else {
+        [0x00, 0x00, 0x48, 0x41]
+    }
+);
+
+let value = f32::from_be_bytes([0x41, 0x48, 0x00, 0x00]);
+assert_eq!(value, 12.5);
+
+let value = f32::from_le_bytes([0x00, 0x00, 0x48, 0x41]);
+assert_eq!(value, 12.5);
+
+let value = f32::from_ne_bytes(if cfg!(target_endian = "big") {
+    [0x41, 0x48, 0x00, 0x00]
+} else {
+    [0x00, 0x00, 0x48, 0x41]
+});
+assert_eq!(value, 12.5);
+
+assert!((-3.0f32).clamp(-2.0, 1.0) == -2.0);
+assert!((0.0f32).clamp(-2.0, 1.0) == 0.0);
+assert!((2.0f32).clamp(-2.0, 1.0) == 1.0);
+assert!((f32::NAN).clamp(-2.0, 1.0).is_nan());
+
+
+let x: f32 = false.into();
+assert_eq!(x, 0.0);
+assert!(x.is_sign_positive());
+
+let y: f32 = true.into();
+assert_eq!(y, 1.0);
+
+let x: f32 = 50.50;
+let y: f32 = 8.125;
+let remainder = x - (x / y).trunc() * y;
+
+// The answer to both operations is 1.75
+assert_eq!(x % y, remainder);
+
+
+let x: f32 = 50.50;
+let y: f32 = 8.125;
+let remainder = x - (x / y).trunc() * y;
+
+// The answer to both operations is 1.75
+assert_eq!(x % y, remainder);
+
